@@ -1,0 +1,28 @@
+{
+    "name": "gibzgrades",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev": "nodemon index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Lela810/GIBZGrades.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Lela810/GIBZGrades/issues"
+    },
+    "homepage": "https://github.com/Lela810/GIBZGrades#readme",
+    "dependencies": {
+        "@discordjs/rest": "^0.4.1",
+        "discord-api-types": "^0.32.1",
+        "discord.js": "^13.6.0",
+        "dotenv": "^16.0.0"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.16"
+    }
+}

@@ -1,0 +1,27 @@
+version: '3.3'
+services:
+  web:
+    container_name: GIBZMensaAPI
+    volumes:
+      - ./archive:/app/archive
+    build: .
+    ports:
+      - '8080:8080'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'node', '/app/services/healthcheck.js']
+      interval: 1m
+      timeout: 10s
+      retries: 0
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongo:4.4.10
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_DATABASE=archive
+    volumes:
+      - ./db:/data/db
+    ports:
+      - 27017:27017
+    restart: unless-stopped
