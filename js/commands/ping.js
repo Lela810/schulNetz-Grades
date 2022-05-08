@@ -5,7 +5,7 @@ module.exports = {
         .setName('ping')
         .setDescription('Pong!'),
     async execute(interaction) {
-        interaction.reply({
+        interaction.editReply({
             content: 'Pong!',
             ephemeral: true
         });
