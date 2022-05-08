@@ -1,5 +1,5 @@
 /node_modules
-/archive
+/db
 /.vscode
 *.http
 .env

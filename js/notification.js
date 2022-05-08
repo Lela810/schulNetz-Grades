@@ -14,9 +14,14 @@ async function notify() {
 
         const newGrades = await scrape(currentUser.url, currentUser.pin)
 
+        if (newGrades == null) {
+            continue
+        }
+
+
         if (!currentUser.grades) {
             currentUser.grades = newGrades
-            await findAndUpdate(currentUser.userID, currentUser)
+            await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
         }
 
         if (!currentUser.url || !currentUser.pin) {
@@ -33,12 +38,12 @@ async function notify() {
 
         const difference = onlyInLeft(newGrades, currentUser.grades, isSameGrade);
 
-        //console.log(difference);
+        //console.log(newGrades);
 
         currentUser.grades.push(...difference)
 
         if (difference.length > 0) {
-            await findAndUpdate(currentUser.userID, currentUser)
+            await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
             await sendUserDM(currentUser.userID, JSON.stringify(difference))
         }
 

@@ -2,14 +2,15 @@ version: '3.3'
 services:
   web:
     container_name: schulNetz-Grades
-    volumes:
-      - ./archive:/app/archive
     build: .
     restart: unless-stopped
     depends_on:
       - mongodb
+    environment:
+      - PROD=false
+    network_mode: host
   mongodb:
-    image: mongo:4.4.10
+    image: mongo:5.0.8
     container_name: mongodb
     environment:
       - MONGO_INITDB_DATABASE=schulNetz-grades
@@ -18,3 +19,4 @@ services:
     ports:
       - 27017:27017
     restart: unless-stopped
+    network_mode: host

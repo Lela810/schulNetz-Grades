@@ -72,7 +72,7 @@ client.on("interactionCreate", async interaction => {
 
 async function sendUserDM(userID, message) {
     const user = await client.users.fetch(userID);
-    console.log("send message")
+    user.send(message);
 }
 
 

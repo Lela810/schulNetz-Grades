@@ -11,7 +11,15 @@ async function scrape(url, pin) {
     });
 
 
+
     const $ = cheerio.load(data);
+
+    const check = $('h3:contains("Ihre letzten Noten")').text();
+    if (check != 'Ihre letzten Noten') {
+        return null;
+    }
+
+
     const gradesDataArray = $(`body > table:first-of-type`)
         .text()
         .trim()

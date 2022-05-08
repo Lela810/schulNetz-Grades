@@ -33,9 +33,16 @@ module.exports = {
             return;
         }
 
+        let userID
+        if (interaction.user.id) {
+            userID = interaction.user.id
+        } else {
+            userID = interaction.member.user.id
+        }
+
 
         const user = {
-            ['userID']: interaction.member.user.id,
+            ['userID']: userID,
             ['url']: url,
             ['pin']: pin
         }

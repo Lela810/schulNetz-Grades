@@ -13,10 +13,12 @@ async function createUser(json) {
 }
 
 
-async function findAndUpdate(userID, newUser) {
+async function findAndUpdate(userID, newKeyValue, key) {
 
     user.findOneAndUpdate({ 'userID': userID }, {
-        $set: { grades: newUser.grades }
+        $set: {
+            [key]: newKeyValue
+        }
     }, function(err, result) {
         if (err) {
             console.error(err);
@@ -25,6 +27,18 @@ async function findAndUpdate(userID, newUser) {
         }
     });
 
+}
+
+
+async function loadUserNoGrades(userID) {
+    let userEntry
+    try {
+        userEntry = await user.find({ 'userID': userID }, { _id: 0, __v: 0, grades: 0 });
+        return userEntry
+    } catch (err) {
+        console.error(err);
+        return err;
+    }
 }
 
 
@@ -40,4 +54,4 @@ async function loadAllUsers() {
 }
 
 
-module.exports = { createUser, loadAllUsers, findAndUpdate }
+module.exports = { createUser, loadAllUsers, findAndUpdate, loadUserNoGrades }
