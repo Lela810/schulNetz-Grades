@@ -1,6 +1,2 @@
-const discord = require('./js/discord');
+const discord = require('./js/discord.js');
 require('dotenv').config()
-
-
-
-discord.testmessage()
