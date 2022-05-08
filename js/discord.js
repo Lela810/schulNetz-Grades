@@ -2,7 +2,7 @@ const Discord = require("discord.js");
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const fs = require('node:fs');
-require('dotenv').config()
+
 
 const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 
@@ -54,21 +54,31 @@ client.on("interactionCreate", async interaction => {
     const command = client.commands.get(interaction.commandName);
     if (!command) return;
     try {
+        await interaction.deferReply({
+            ephemeral: true
+        });
         await command.execute(interaction);
     } catch (error) {
         console.error(error);
 
-        await interaction.reply({
-            content: 'An error occurred while executing this command. Please try again later :)',
+        await interaction.editReply({
+            content: 'An error occurred while executing this command. Please try again later :) \n' + error,
             ephemeral: true
         })
+
     }
 })
 
 
-client.login(process.env.BOT_TOKEN);
+async function sendUserDM(userID, message) {
+    const user = await client.users.fetch(userID);
+    console.log("send message")
+}
+
+
+//client.login(process.env.BOT_TOKEN);
 
 
 
 
-module.exports = {};
+module.exports = { client, sendUserDM };

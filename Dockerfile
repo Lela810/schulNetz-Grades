@@ -1,4 +1,4 @@
-FROM node:12.18.1
+FROM node:16.14.0
 
 ENV NODE_ENV=production \
     IS_DOCKER=true
@@ -14,7 +14,3 @@ RUN npm install --production
 COPY . .
 
 CMD [ "node", "index.js" ]
-
-EXPOSE 8080
-
-HEALTHCHECK --interval=5m --timeout=2s --start-period=10s CMD node /app/services/healthcheck.js

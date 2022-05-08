@@ -1,41 +1,50 @@
 const cheerio = require('cheerio');
-const request = require('request');
+const axios = require('axios');
 
-function scrape(url, pin) {
-
-    const options = {
-        method: 'POST',
-        url: url,
-        formData: {
-            "pin": pin,
-        }
-    };
-
-    request(options, (error, response, html) => {
-        if (!error) {
-            let gradesDataArray = new Array()
-            const $ = cheerio.load(html);
-            gradesDataArray = $(`body > table:first-of-type`)
-                .text()
-                .trim()
-                .replace(/\s\s+/g, '\n')
-                .split('\n')
+async function scrape(url, pin) {
 
 
-            /* for (var i = 0; i < gradesDataArray.length; i++) {
-                console.log(gradesDataArray[i])
-            } */
+    const { data } = await axios.post(url, `pin=${pin}`, {
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+    });
 
 
-            //console.log(gradesDataArray[0] + gradesDataArray[1] + gradesDataArray[2])
+    const $ = cheerio.load(data);
+    const gradesDataArray = $(`body > table:first-of-type`)
+        .text()
+        .trim()
+        .replace(/\s\s+/g, '\n')
+        .split('\n')
 
-            return gradesDataArray;
+
+    const gradesData = [];
+    for (let i = 0; i < gradesDataArray.length / 4; i++) {
+        const items = gradesDataArray.slice(i * 4, i * 4 + 4);
+
+        gradesData.push({
+            subject: items[0],
+            name: items[1],
+            date: items[2],
+            grades: parseFloat(items[3]),
+        });
+    }
 
 
-        } else {
-            throw new Error(error);
-        }
-    })
+    /* for (var i = 0; i < gradesDataArray.length; i++) {
+        console.log(gradesDataArray[i])
+    } */
+
+
+    //console.log(gradesDataArray)
+
+    return gradesData;
+
+
+
+
+
 };
 
 module.exports = { scrape }
