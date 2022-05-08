@@ -59,7 +59,7 @@ client.on("interactionCreate", async interaction => {
         console.error(error);
 
         await interaction.reply({
-            content: 'An error occurred while executing this command.',
+            content: 'An error occurred while executing this command. Please try again later :)',
             ephemeral: true
         })
     }
@@ -67,6 +67,8 @@ client.on("interactionCreate", async interaction => {
 
 
 client.login(process.env.BOT_TOKEN);
+
+
 
 
 module.exports = {};
