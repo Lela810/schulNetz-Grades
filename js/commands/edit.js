@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { findAndUpdate } = require('../db.js');
+const { findAndUpdate, loadUserNoGrades } = require('../db.js');
 const { checkCredentials } = require('../check-credentials.js');
 
 module.exports = {
@@ -29,7 +29,14 @@ module.exports = {
             userID = interaction.member.user.id
         }
 
-
+        const user = await loadUserNoGrades(userID)
+        if (!user) {
+            interaction.editReply({
+                content: 'Please use ``/register`` first!',
+                ephemeral: true
+            });
+            return
+        }
 
 
         try {

@@ -7,7 +7,7 @@ async function checkCredentials(urlOrPin, key, userID, urlOrPinReverse, interact
     let pin
     let url
 
-    const user = (await loadUserNoGrades(userID))[0]
+    const user = await loadUserNoGrades(userID)
 
 
     if (key == 'url') {

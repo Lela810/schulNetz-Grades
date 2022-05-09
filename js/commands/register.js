@@ -32,8 +32,10 @@ module.exports = {
         }
 
 
+
+
         try {
-            const existingUser = (await loadUserNoGrades(userID))[0]
+            const existingUser = await loadUserNoGrades(userID)
             if (existingUser.unsubscribe) {
                 await findAndUpdate(userID, false, 'unsubscribe')
             }
@@ -64,7 +66,7 @@ module.exports = {
 
 
 
-        const user = {
+        const userEntry = {
             ['userID']: userID,
             ['url']: url,
             ['pin']: pin
@@ -73,7 +75,7 @@ module.exports = {
 
         try {
 
-            await createUser(user)
+            await createUser(userEntry)
             interaction.editReply({
                 content: 'Your are now registered for schulNetz Grade Notifications!',
                 ephemeral: true

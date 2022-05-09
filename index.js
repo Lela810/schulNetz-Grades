@@ -16,7 +16,21 @@
 
     client.login(process.env.BOT_TOKEN);
 
-    setInterval(async() => { await notify() }, 1000 * 10);
+
+    async function runNotification() {
+        const startTime = performance.now();
+        try { await notify() } catch (error) { console.error(error) }
+        const endTime = performance.now();
+        const runtime = endTime - startTime
+        const nextRun = runtime + 1000 * 10;
+        setTimeout(runNotification, nextRun)
+        return
+    }
+
+    setTimeout(async() => { await runNotification() }, 1000)
+
+
+
 
 
 

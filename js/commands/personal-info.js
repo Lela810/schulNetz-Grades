@@ -15,7 +15,14 @@ module.exports = {
             userID = interaction.member.user.id
         }
 
-        const user = (await loadUser(userID))[0]
+        const user = await loadUser(userID)
+        if (!user) {
+            interaction.editReply({
+                content: 'Please use ``/register`` first!',
+                ephemeral: true
+            });
+            return
+        }
 
 
         interaction.editReply({

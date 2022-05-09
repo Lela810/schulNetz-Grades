@@ -15,7 +15,15 @@ module.exports = {
             userID = interaction.member.user.id
         }
 
-        const user = (await loadUserNoGrades(userID))[0]
+        const user = await loadUserNoGrades(userID)
+        if (!user) {
+            interaction.editReply({
+                content: 'Please use ``/register`` first!',
+                ephemeral: true
+            });
+            return
+        }
+
 
         if (!user.unsubscribe) {
 

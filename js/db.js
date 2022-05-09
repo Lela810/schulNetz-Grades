@@ -34,7 +34,7 @@ async function loadUserNoGrades(userID) {
     let userEntry
     try {
         userEntry = await user.find({ 'userID': userID }, { _id: 0, __v: 0, grades: 0 });
-        return userEntry
+        return userEntry[0]
     } catch (err) {
         console.error(err);
         return err;
@@ -46,7 +46,7 @@ async function loadUser(userID) {
     let userEntry
     try {
         userEntry = await user.find({ 'userID': userID }, { _id: 0, __v: 0 });
-        return userEntry
+        return userEntry[0]
     } catch (err) {
         console.error(err);
         return err;
