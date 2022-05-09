@@ -5,7 +5,7 @@ services:
     build: .
     restart: unless-stopped
     env_file:
-      - fileName: .env
+      - fileName: ./.env
     depends_on:
       - mongodb
     environment:
