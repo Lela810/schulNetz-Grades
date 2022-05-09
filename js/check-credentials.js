@@ -2,8 +2,7 @@ const cheerio = require('cheerio');
 const axios = require('axios');
 const { loadUserNoGrades } = require('./db.js');
 
-async function checkCredentials(urlOrPin, key, userID, interaction) {
-
+async function checkCredentials(urlOrPin, key, userID, urlOrPinReverse, interaction) {
 
     let pin
     let url
@@ -13,10 +12,10 @@ async function checkCredentials(urlOrPin, key, userID, interaction) {
 
     if (key == 'url') {
         url = urlOrPin
-        pin = user.pin
+        try { pin = user.pin } catch (err) { pin = urlOrPinReverse }
     } else if (key == 'pin') {
         pin = urlOrPin
-        url = user.url
+        try { url = user.url } catch (err) { url = urlOrPinReverse }
     }
 
 

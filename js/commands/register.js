@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { createUser } = require('../db.js');
+const { checkCredentials } = require('../check-credentials.js');
 
 
 
@@ -35,9 +36,10 @@ module.exports = {
         try {
             url = interaction.options._hoistedOptions.find(element => element.name === 'url').value;
             pin = interaction.options._hoistedOptions.find(element => element.name === 'pin').value;
-            if (await checkCredentials(url, 'url', userID)) { throw new Error("Incorrect login!") }
-            if (await checkCredentials(pin, 'pin', userID)) { throw new Error("Incorrect login!") }
+            if (await checkCredentials(url, 'url', userID, urlOrPinReverse = pin)) { throw new Error("Incorrect URL!") }
+            if (await checkCredentials(pin, 'pin', userID, urlOrPinReverse = url)) { throw new Error("Incorrect Pin!") }
         } catch (err) {
+            console.log(err);
             interaction.editReply({
                 content: 'Please enter a **valid and working** schulNetz.mobile Link and Pin!',
                 ephemeral: true
