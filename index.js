@@ -20,7 +20,4 @@
 
 
 
-    //client.destroy()
-    //console.log(await scrape("https://gibz.zg.ch/public/mindex.php?longurl=ieFZLG8e6hntKjJSpKv4E0wnhUan7PRtWxaQKCYNTD66Ac5c5CTW2KbwXkMA7qQ7", "3107"))
-
 })()
