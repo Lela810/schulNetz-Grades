@@ -8,7 +8,7 @@ module.exports = {
         .setName('register')
         .setDescription('Register yourself for EDU Grade Notifications!')
         .addStringOption(option =>
-            option.setName('link')
+            option.setName('url')
             .setDescription('schulNetz.mobile Link')
             .setRequired(true))
         .addIntegerOption(option =>
@@ -22,16 +22,6 @@ module.exports = {
         let url
         let pin
 
-        try {
-            url = interaction.options._hoistedOptions.find(element => element.name === 'link').value;
-            pin = interaction.options._hoistedOptions.find(element => element.name === 'pin').value;
-        } catch (err) {
-            interaction.editReply({
-                content: 'Please enter a valid schulNetz.mobile Link and Pin!',
-                ephemeral: true
-            });
-            return;
-        }
 
         let userID
         if (interaction.user.id) {
@@ -39,6 +29,24 @@ module.exports = {
         } else {
             userID = interaction.member.user.id
         }
+
+
+
+        try {
+            url = interaction.options._hoistedOptions.find(element => element.name === 'url').value;
+            pin = interaction.options._hoistedOptions.find(element => element.name === 'pin').value;
+            if (await checkCredentials(url, 'url', userID)) { throw new Error("Incorrect login!") }
+            if (await checkCredentials(pin, 'pin', userID)) { throw new Error("Incorrect login!") }
+        } catch (err) {
+            interaction.editReply({
+                content: 'Please enter a **valid and working** schulNetz.mobile Link and Pin!',
+                ephemeral: true
+            });
+            return;
+        }
+
+
+
 
 
         const user = {

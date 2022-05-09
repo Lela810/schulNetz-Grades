@@ -3,16 +3,21 @@ const axios = require('axios');
 
 async function scrape(url, pin) {
 
+    let $
+    try {
 
-    const { data } = await axios.post(url, `pin=${pin}`, {
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-    });
+        const { data } = await axios.post(url, `pin=${pin}`, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        });
+        $ = cheerio.load(data);
+
+    } catch (err) {
+        return null;
+    }
 
 
-
-    const $ = cheerio.load(data);
 
     const check = $('h3:contains("Ihre letzten Noten")').text();
     if (check != 'Ihre letzten Noten') {

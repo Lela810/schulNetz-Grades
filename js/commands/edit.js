@@ -1,12 +1,13 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { findAndUpdate, loadUserNoGrades } = require('../db.js');
+const { findAndUpdate } = require('../db.js');
+const { checkCredentials } = require('../check-credentials.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('edit')
         .setDescription('Edit either your Link or Pin!')
         .addStringOption(option =>
-            option.setName('link')
+            option.setName('url')
             .setDescription('New schulNetz.mobile Link')
             .setRequired(false))
         .addIntegerOption(option =>
@@ -19,6 +20,7 @@ module.exports = {
         let url
         let pin
         let userID
+        const keys = ['url', 'pin']
 
 
         if (interaction.user.id) {
@@ -31,29 +33,32 @@ module.exports = {
 
 
         try {
-            url = interaction.options._hoistedOptions.find(element => element.name === 'link').value;
-            let user = (await loadUserNoGrades(userID))[0]
-            user.url = url
-            console.log(await findAndUpdate(userID, user.url, 'url'))
-        } catch (err) {}
+            for (key in keys) {
+                const keyStr = keys[key]
+                try {
+                    const value = interaction.options._hoistedOptions.find(element => element.name === keyStr).value;
+                    if ([keyStr] == 'url') { url = value } else if ([keyStr] == 'pin') { pin = value }
+                    if (await checkCredentials(value, [keyStr], userID, interaction)) { return }
+                    await findAndUpdate(userID, value, [keyStr])
+                } catch (err) {}
+            }
 
+            if (!pin && !url) {
+                interaction.editReply({
+                    content: 'Please enter a valid schulNetz.mobile Link or Pin!',
+                    ephemeral: true
+                });
+            } else {
+                interaction.editReply({
+                    content: 'Your schulNetz.mobile infos have been saved!',
+                    ephemeral: true
+                });
+            }
 
-        try {
-            pin = interaction.options._hoistedOptions.find(element => element.name === 'pin').value;
-            let user = (await loadUserNoGrades(userID))[0]
-            user.pin = pin
-            console.log(await findAndUpdate(userID, user.pin, 'pin'))
-        } catch (err) {}
-
-
-        if (url === undefined && pin === undefined) {
-            interaction.editReply({
-                content: 'Please enter a valid schulNetz.mobile Link or Pin!',
-                ephemeral: true
-            });
-            return;
+        } catch (err) {
+            console.error(err);
+            throw new Error("Something went wrong during the database entry update!");
         }
-
 
     }
 };

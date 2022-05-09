@@ -42,6 +42,18 @@ async function loadUserNoGrades(userID) {
 }
 
 
+async function loadUser(userID) {
+    let userEntry
+    try {
+        userEntry = await user.find({ 'userID': userID }, { _id: 0, __v: 0 });
+        return userEntry
+    } catch (err) {
+        console.error(err);
+        return err;
+    }
+}
+
+
 async function loadAllUsers() {
     let users
     try {
@@ -54,4 +66,4 @@ async function loadAllUsers() {
 }
 
 
-module.exports = { createUser, loadAllUsers, findAndUpdate, loadUserNoGrades }
+module.exports = { createUser, loadAllUsers, findAndUpdate, loadUserNoGrades, loadUser }

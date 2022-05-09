@@ -1,6 +1,6 @@
 const { loadAllUsers, findAndUpdate } = require('./db.js');
 const { scrape } = require('./schulNetzScrape.js');
-const { sendUserDM } = require('./discord.js');
+const { sendUserEmbedNotification } = require('./discord.js');
 
 
 async function notify() {
@@ -38,13 +38,13 @@ async function notify() {
 
         const difference = onlyInLeft(newGrades, currentUser.grades, isSameGrade);
 
-        //console.log(newGrades);
+        //console.log(difference);
 
         currentUser.grades.push(...difference)
 
         if (difference.length > 0) {
             await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
-            await sendUserDM(currentUser.userID, JSON.stringify(difference))
+            await sendUserEmbedNotification(currentUser.userID, currentUser.url, difference[0])
         }
 
     }

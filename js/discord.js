@@ -76,9 +76,26 @@ async function sendUserDM(userID, message) {
 }
 
 
+async function sendUserEmbedNotification(userID, url, messageObject) {
+
+    const embed = new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle(messageObject.name)
+        .setURL(url)
+        .setAuthor({ name: 'schulNetz Grades', iconURL: client.user.avatarURL() })
+        .setThumbnail(client.user.avatarURL())
+        .addFields({ name: 'Subject', value: messageObject.subject, inline: true }, { name: 'Grade', value: messageObject.grades + "\u200b", inline: true }, { name: 'Date', value: messageObject.date })
+        .setTimestamp()
+        .setFooter({ text: 'subject to change', iconURL: client.user.avatarURL() });
+
+    const user = await client.users.fetch(userID);
+    user.send({ embeds: [embed] });
+}
+
+
 //client.login(process.env.BOT_TOKEN);
 
 
 
 
-module.exports = { client, sendUserDM };
+module.exports = { client, sendUserDM, sendUserEmbedNotification };
