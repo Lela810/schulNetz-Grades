@@ -1,6 +1,6 @@
 (async() => {
 
-    require('dotenv').config()
+    await require('dotenv').config()
     const { client } = require('./js/discord.js');
     const { notify } = require('./js/notification.js');
 
