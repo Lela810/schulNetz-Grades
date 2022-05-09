@@ -27,7 +27,7 @@ client.once('ready', () => {
     const clientId = client.user.id;
     const guildId = '818249756043509771';
 
-
+    console.log(process.env.PROD);
     (async() => {
         try {
             if (process.env.PROD == 'true') {
