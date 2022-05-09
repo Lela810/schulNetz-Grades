@@ -5,8 +5,8 @@ const { sendUserEmbedNotification } = require('./discord.js');
 
 async function notify() {
 
-    const users = await loadAllUsers()
-        //console.log(users)
+    const users = await loadAllUsers();
+    //console.log(users)
 
     for (userID in users) {
 
@@ -44,7 +44,9 @@ async function notify() {
 
         if (difference.length > 0) {
             await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
-            await sendUserEmbedNotification(currentUser.userID, currentUser.url, difference[0])
+            if (!currentUser.unsubscribe) {
+                await sendUserEmbedNotification(currentUser.userID, currentUser.url, difference[0])
+            }
         }
 
     }

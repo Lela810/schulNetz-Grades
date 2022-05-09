@@ -54,10 +54,11 @@ async function loadUser(userID) {
 }
 
 
-async function loadAllUsers() {
+async function loadAllUsers(find) {
     let users
+    if (!find) { find = {} }
     try {
-        users = await user.find({}, { _id: 0, __v: 0 });
+        users = await user.find(find, { _id: 0, __v: 0 });
         return users
     } catch (err) {
         console.error(err);

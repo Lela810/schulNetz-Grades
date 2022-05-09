@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { createUser } = require('../db.js');
+const { createUser, loadUserNoGrades, findAndUpdate } = require('../db.js');
 const { checkCredentials } = require('../check-credentials.js');
 
 
@@ -30,6 +30,19 @@ module.exports = {
         } else {
             userID = interaction.member.user.id
         }
+
+
+        try {
+            const existingUser = (await loadUserNoGrades(userID))[0]
+            if (existingUser.unsubscribe) {
+                await findAndUpdate(userID, false, 'unsubscribe')
+            }
+            interaction.editReply({
+                content: 'We have reactivated your subscription!',
+                ephemeral: true
+            });
+            return
+        } catch (err) {}
 
 
 

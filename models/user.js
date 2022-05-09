@@ -7,6 +7,10 @@ const userSchema = new mongoose.Schema({
         unique: true,
         index: true
     },
+    unsubscribe: {
+        type: Boolean,
+        required: false
+    },
     url: {
         type: String,
         required: true
