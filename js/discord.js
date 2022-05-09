@@ -30,7 +30,7 @@ client.once('ready', () => {
 
     (async() => {
         try {
-            if (process.env.PROD === 'true') {
+            if (process.env.PROD == 'true') {
                 await rest.put(Routes.applicationCommands(clientId), {
                     body: commands
                 });
