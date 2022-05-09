@@ -28,7 +28,7 @@ module.exports = {
                 content: 'You have subscribed to schulNetz Grade notifications!',
                 ephemeral: true
             });
-        } else if (user.unsubscribe) {
+        } else if (!user.unsubscribe) {
             interaction.editReply({
                 content: 'You are already subscribed to schulNetz Grade notifications!',
                 ephemeral: true
