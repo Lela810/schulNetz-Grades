@@ -3,6 +3,7 @@
     await require('dotenv').config()
     const { client } = require('./js/discord.js');
     const { notify } = require('./js/notification.js');
+    const { sendMail } = require('./js/mail.js');
 
     const mongoose = require('mongoose');
 

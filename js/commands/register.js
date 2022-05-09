@@ -15,13 +15,19 @@ module.exports = {
         .addIntegerOption(option =>
             option.setName('pin')
             .setDescription('schulNetz.mobile Pin')
-            .setRequired(true)),
+            .setRequired(true))
+        .addStringOption(option =>
+            option.setName('mail')
+            .setDescription('Mail-Address to receive Notifications')
+            .setRequired(false)),
     async execute(interaction) {
 
 
 
         let url
         let pin
+        let mail
+        let userEntry
 
 
         let userID
@@ -32,15 +38,23 @@ module.exports = {
         }
 
 
+        const validateEmail = (email) => {
+            return String(email)
+                .toLowerCase()
+                .match(
+                    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+                );
+        };
+
 
 
         try {
             const existingUser = await loadUserNoGrades(userID)
-            if (existingUser.unsubscribe) {
-                await findAndUpdate(userID, false, 'unsubscribe')
+            if (!existingUser.subscribeDiscord) {
+                await findAndUpdate(userID, true, 'subscribeDiscord')
             }
             interaction.editReply({
-                content: 'We have reactivated your subscription!',
+                content: 'You are already registered! \nWe have reactivated your Discord subscription.',
                 ephemeral: true
             });
             return
@@ -63,14 +77,33 @@ module.exports = {
         }
 
 
-
-
-
-        const userEntry = {
-            ['userID']: userID,
-            ['url']: url,
-            ['pin']: pin
+        if (interaction.options._hoistedOptions.find(element => element.name == 'mail') != undefined) {
+            mail = interaction.options._hoistedOptions.find(element => element.name == 'mail').value
+            if (validateEmail(mail) == null) {
+                interaction.editReply({
+                    content: 'Please enter a **valid** Email-Address!',
+                    ephemeral: true
+                });
+                return
+            }
+            userEntry = {
+                ['userID']: userID,
+                ['url']: url,
+                ['pin']: pin,
+                ['mail']: mail,
+                ['subscribeDiscord']: true
+            }
+        } else {
+            userEntry = {
+                ['userID']: userID,
+                ['url']: url,
+                ['pin']: pin,
+                ['subscribeDiscord']: true
+            }
         }
+
+
+
 
 
         try {

@@ -1,6 +1,7 @@
 const { loadAllUsers, findAndUpdate } = require('./db.js');
 const { scrape } = require('./schulNetzScrape.js');
 const { sendUserEmbedNotification } = require('./discord.js');
+const { sendNotificationMail } = require('./mail.js');
 
 
 async function notify() {
@@ -38,19 +39,22 @@ async function notify() {
 
         const difference = onlyInLeft(newGrades, currentUser.grades, isSameGrade);
 
-        //console.log(difference);
+        //console.log(currentUser.mail);
 
         currentUser.grades.push(...difference)
 
         if (difference.length > 0) {
             await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
-            if (!currentUser.unsubscribe) {
+            if (currentUser.subscribeDiscord) {
                 await sendUserEmbedNotification(currentUser.userID, currentUser.url, difference[0])
             }
+            if (currentUser.subscribeMail && currentUser.mail) {
+                sendNotificationMail(currentUser.mail, "A New Grade has been uploaded!", difference[0])
+            }
+
         }
 
     }
-
 }
 
 module.exports = { notify }

@@ -7,7 +7,11 @@ const userSchema = new mongoose.Schema({
         unique: true,
         index: true
     },
-    unsubscribe: {
+    subscribeDiscord: {
+        type: Boolean,
+        required: false
+    },
+    subscribeMail: {
         type: Boolean,
         required: false
     },
@@ -18,6 +22,10 @@ const userSchema = new mongoose.Schema({
     pin: {
         type: Number,
         required: true
+    },
+    mail: {
+        type: String,
+        required: false
     },
     grades: {
         type: Object,

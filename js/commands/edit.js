@@ -13,14 +13,18 @@ module.exports = {
         .addIntegerOption(option =>
             option.setName('pin')
             .setDescription('New schulNetz.mobile Pin')
+            .setRequired(false))
+        .addStringOption(option =>
+            option.setName('mail')
+            .setDescription('New Notification Mail-Address')
             .setRequired(false)),
     async execute(interaction) {
 
 
         let url
         let pin
+        let mail
         let userID
-        const keys = ['url', 'pin']
 
 
         if (interaction.user.id) {
@@ -39,32 +43,68 @@ module.exports = {
         }
 
 
-        try {
-            for (key in keys) {
-                const keyStr = keys[key]
-                try {
-                    const value = interaction.options._hoistedOptions.find(element => element.name === keyStr).value;
-                    if ([keyStr] == 'url') { url = value } else if ([keyStr] == 'pin') { pin = value }
-                    if (await checkCredentials(value, [keyStr], userID, interaction)) { return }
-                    await findAndUpdate(userID, value, [keyStr])
-                } catch (err) {}
-            }
+        const validateEmail = (email) => {
+            return String(email)
+                .toLowerCase()
+                .match(
+                    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+                );
+        };
 
-            if (!pin && !url) {
-                interaction.editReply({
-                    content: 'Please enter a valid schulNetz.mobile Link or Pin!',
-                    ephemeral: true
-                });
-            } else {
-                interaction.editReply({
-                    content: 'Your schulNetz.mobile infos have been saved!',
-                    ephemeral: true
-                });
+        function sendAnswer(interaction) {
+            interaction.editReply({
+                content: 'Your schulNetz.mobile infos have been saved!',
+                ephemeral: true
+            });
+            return
+        }
+
+
+
+
+        try {
+
+            switch (true) {
+                case (interaction.options._hoistedOptions.find(element => element.name == 'url') != undefined):
+                    {
+                        url = interaction.options._hoistedOptions.find(element => element.name === 'url').value;
+                        if (await checkCredentials(url, 'url', userID, interaction)) { throw new Error("Invalid URL") }
+                        await findAndUpdate(userID, url, 'url')
+                        await sendAnswer(interaction)
+                        return
+                    }
+                case (interaction.options._hoistedOptions.find(element => element.name == 'pin') != undefined):
+                    {
+                        pin = interaction.options._hoistedOptions.find(element => element.name === 'pin').value;
+                        if (await checkCredentials(pin, 'pin', userID, interaction)) { throw new Error("Invalid PIN") }
+                        await findAndUpdate(userID, pin, 'pin')
+                        sendAnswer(interaction)
+                        return
+                    }
+                case (interaction.options._hoistedOptions.find(element => element.name == 'mail') != undefined):
+                    {
+                        mail = interaction.options._hoistedOptions.find(element => element.name == 'mail').value;
+                        if (validateEmail(mail) == null) { throw new Error("Invalid Mail") }
+                        await findAndUpdate(userID, mail, 'mail')
+                        sendAnswer(interaction)
+                        return
+                    }
+                default:
+                    {
+                        interaction.editReply({
+                            content: 'Please be sure that you have entered a **valid** option!',
+                            ephemeral: true
+                        });
+                    }
+
+
             }
 
         } catch (err) {
-            console.error(err);
-            throw new Error("Something went wrong during the database entry update!");
+            interaction.editReply({
+                content: 'Please be sure that you have entered a **valid** option!',
+                ephemeral: true
+            });
         }
 
     }
