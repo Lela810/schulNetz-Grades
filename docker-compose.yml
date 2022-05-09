@@ -4,12 +4,8 @@ services:
     container_name: schulNetz-Grades
     build: .
     restart: unless-stopped
-    env_file:
-      - ./.env
     depends_on:
       - mongodb
-    environment:
-      - PROD=false
     network_mode: host
   mongodb:
     image: mongo:4.4.10
