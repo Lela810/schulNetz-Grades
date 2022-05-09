@@ -1,10 +1,11 @@
 {
     "name": "gibzgrades",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "nodemon index.js"
+        "dev": "nodemon index.js",
+        "update": "docker-compose down --rmi 'local' && git pull && docker-compose up -d"
     },
     "repository": {
         "type": "git",
