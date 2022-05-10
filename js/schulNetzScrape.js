@@ -66,7 +66,10 @@ async function scrapeSchulNetz(username, password, otp) {
 
 
     const url = "https://gibz.zg.ch/login/sls/auth?cmd=auth-t"
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: ['--no-sandbox']
+    })
     const page = await browser.newPage();
     await page.goto(url);
     await page.type('input[name="userid"]', username);
