@@ -1,4 +1,5 @@
 const mongoose = require("mongoose")
+const encrypt = require('mongoose-encryption');
 
 const userSchema = new mongoose.Schema({
     userID: {
@@ -44,5 +45,12 @@ const userSchema = new mongoose.Schema({
         required: false
     }
 })
+
+
+var encKey = process.env.ENCKEY;
+var sigKey = process.env.SIGKEY;
+
+userSchema.plugin(encrypt, { encryptionKey: encKey, signingKey: sigKey, decryptPostSave: false, additionalAuthenticatedFields: ['userID'], excludeFromEncryption: ['subscribeMail', 'subscribeDiscord', 'userID', 'grades'] });
+
 
 module.exports = mongoose.model('user', userSchema)
