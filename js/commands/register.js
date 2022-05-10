@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { createUser, loadUserNoGrades, findAndUpdate } = require('../db.js');
-const { checkCredentialsUrlPin } = require('../check-credentials.js');
+const { registerSchulNetzMobile } = require('./register/schulnetzmobile.js');
+const { registerSchulNetz } = require('./register/schulnetz.js');
 
 
 
@@ -45,13 +46,6 @@ module.exports = {
     async execute(interaction) {
 
 
-
-        let url
-        let pin
-        let mail
-        let username
-        let password
-        let otp
         let userEntry
 
 
@@ -61,16 +55,6 @@ module.exports = {
         } else {
             userID = interaction.member.user.id
         }
-
-
-        const validateEmail = (email) => {
-            return String(email)
-                .toLowerCase()
-                .match(
-                    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
-                );
-        };
-
 
 
         try {
@@ -86,78 +70,14 @@ module.exports = {
         } catch (err) {}
 
 
-
-        if (interaction.options._hoistedOptions.find(element => element.name === 'url') || interaction.options._hoistedOptions.find(element => element.name === 'pin')) {
-            try {
-                url = interaction.options._hoistedOptions.find(element => element.name === 'url').value;
-                pin = interaction.options._hoistedOptions.find(element => element.name === 'pin').value;
-                if (await checkCredentialsUrlPin(url, 'url', userID, urlOrPinReverse = pin)) { throw new Error("Incorrect URL!") }
-                if (await checkCredentialsUrlPin(pin, 'pin', userID, urlOrPinReverse = url)) { throw new Error("Incorrect Pin!") }
-            } catch (err) {
-                console.log(err);
-                interaction.editReply({
-                    content: 'Please enter a **valid and working** schulNetz.mobile Link and Pin!',
-                    ephemeral: true
-                });
-                return;
-            }
-
-
-            if (interaction.options._hoistedOptions.find(element => element.name == 'mail') != undefined) {
-                mail = interaction.options._hoistedOptions.find(element => element.name == 'mail').value
-                if (validateEmail(mail) == null) {
-                    interaction.editReply({
-                        content: 'Please enter a **valid** Email-Address!',
-                        ephemeral: true
-                    });
-                    return
-                }
-                userEntry = {
-                    ['userID']: userID,
-                    ['url']: url,
-                    ['pin']: pin,
-                    ['mail']: mail,
-                    ['subscribeDiscord']: true
-                }
-            } else {
-                userEntry = {
-                    ['userID']: userID,
-                    ['url']: url,
-                    ['pin']: pin,
-                    ['subscribeDiscord']: true
-                }
-            }
-        } else if (interaction.options._hoistedOptions.find(element => element.name === 'username') || interaction.options._hoistedOptions.find(element => element.name === 'password')) {
-            try {
-                username = interaction.options._hoistedOptions.find(element => element.name === 'username').value;
-                password = interaction.options._hoistedOptions.find(element => element.name === 'password').value;
-                otp = interaction.options._hoistedOptions.find(element => element.name === 'otp').value;
-                /* if (await checkCredentials(url, 'url', userID, urlOrPinReverse = pin)) { throw new Error("Incorrect URL!") }
-                if (await checkCredentials(pin, 'pin', userID, urlOrPinReverse = url)) { throw new Error("Incorrect Pin!") } */
-            } catch (err) {
-                console.log(err);
-                interaction.editReply({
-                    content: 'Please enter a **valid and working** schulNetz username, password and OTP!',
-                    ephemeral: true
-                });
-                return;
-            }
-
-            userEntry = {
-                ['userID']: userID,
-                ['username']: username,
-                ['password']: password,
-                ['otp']: otp,
-                ['subscribeDiscord']: true
-            }
-
+        switch (interaction.options._subcommand) {
+            case 'schulnetzmobile':
+                userEntry = await registerSchulNetzMobile(interaction, userID)
+                break;
+            case 'schulnetz':
+                userEntry = await registerSchulNetz(interaction, userID)
+                break;
         }
-
-
-
-
-
-
 
 
 
@@ -183,10 +103,6 @@ module.exports = {
             }
 
         }
-
-
-
-
 
     }
 };

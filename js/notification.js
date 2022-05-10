@@ -1,5 +1,6 @@
 const { loadAllUsers, findAndUpdate } = require('./db.js');
-const { scrapeSchulNetz, scrapeSchulNetzMobile } = require('./schulNetzScrape.js');
+const { scrapeSchulNetz } = require('./scrape/schulNetzScrape.js');
+const { scrapeSchulNetzMobile } = require('./scrape/schulNetzMobileScrape.js');
 const { sendUserEmbedNotification } = require('./discord.js');
 const { sendNotificationMail } = require('./mail.js');
 
@@ -14,11 +15,10 @@ async function notify() {
         let currentUser = users[userID]
         let newGrades
 
-
-        if (currentUser.username && currentUser.password && currentUser.otp) {
-            newGrades = await scrapeSchulNetz(currentUser.username, currentUser.password, currentUser.otp)
-        } else if (currentUser.url && currentUser.pin) {
+        if (currentUser.url && currentUser.pin) {
             newGrades = await scrapeSchulNetzMobile(currentUser.url, currentUser.pin)
+        } else if (currentUser.username && currentUser.password && currentUser.otp) {
+            newGrades = await scrapeSchulNetz(currentUser.username, currentUser.password, currentUser.otp)
         }
 
         if (newGrades == null) {

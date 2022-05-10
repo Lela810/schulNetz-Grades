@@ -3,14 +3,11 @@
     await require('dotenv').config()
     const { client } = require('./js/discord.js');
     const { notify } = require('./js/notification.js');
-    const { sendMail } = require('./js/mail.js');
-    const { scrapeSchulNetz } = require('./js/schulNetzScrape.js');
-
-    const mongoose = require('mongoose');
+    const { connect, connection } = require('mongoose');
 
 
-    mongoose.connect(`mongodb://${process.env.MONGODB}/schulNetz-grades`, { useNewUrlParser: true })
-    const db = mongoose.connection
+    connect(`mongodb://${process.env.MONGODB}/schulNetz-grades`, { useNewUrlParser: true })
+    const db = connection
     db.on('error', (error) => console.error(error))
     db.once('open', () => console.log('Connected to Database'))
 

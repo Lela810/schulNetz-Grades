@@ -1,6 +1,8 @@
 const cheerio = require('cheerio');
 const axios = require('axios');
 const { loadUserNoGrades } = require('./db.js');
+const puppeteer = require('puppeteer');
+const { authenticator } = require('otplib');
 
 async function checkCredentialsUrlPin(urlOrPin, key, userID, urlOrPinReverse, interaction) {
 
@@ -55,4 +57,115 @@ async function checkCredentialsUrlPin(urlOrPin, key, userID, urlOrPinReverse, in
     return 0
 }
 
-module.exports = { checkCredentialsUrlPin }
+
+async function checkCredentials(userID, interaction, username = false, password = false, otp = false) {
+
+
+    const user = await loadUserNoGrades(userID)
+
+
+    const inputs = [username, password, otp]
+
+
+    try {
+        for (i in inputs) {
+            const input = inputs[i]
+
+            if (!input) {
+                switch (i) {
+                    case '0':
+                        username = user.username
+                        break;
+                    case '1':
+                        password = user.password
+                        break;
+                    case '2':
+                        otp = user.otp
+                        break;
+                }
+            }
+        }
+        if (username == undefined || password == undefined || otp == undefined) { throw new Error("Not all Inputs are given") }
+    } catch (err) {
+        try {
+            interaction.editReply({
+                content: "Your login credentials are missing!",
+                ephemeral: true
+            });
+        } catch (err) {}
+        return 1;
+    }
+
+
+    const TIMEDOUT = Symbol('TIMEDOUT');
+    async function cReject(ms) {
+        return new Promise((_, reject) => setTimeout(reject, ms, TIMEDOUT));
+    }
+
+
+
+    try {
+
+        const url = "https://gibz.zg.ch/login/sls/auth?cmd=auth-t"
+        const browser = await puppeteer.launch({
+            headless: true,
+            args: ['--no-sandbox']
+        })
+        const page = await browser.newPage();
+        await page.goto(url);
+        await page.type('input[name="userid"]', username);
+        await page.type('input[name="password"]', password);
+        await page.click('button[type="submit"]');
+
+        const token = authenticator.generate(otp);
+
+        const waitForChallenge = page.waitForSelector('input[name="challenge"]');
+        try {
+            await Promise.race([waitForChallenge, cReject(1000)])
+                .catch(err => {
+                    try {
+                        interaction.editReply({
+                            content: "Your Username/Password seem to be wrong!",
+                            ephemeral: true
+                        });
+                    } catch (err) {}
+                    throw new Error("Username/Password wrong");
+                });
+        } catch (err) { return 1 }
+
+        await page.type('input[name="challenge"]', token);
+        await page.click('button[type="submit"]');
+
+        const waitForSchulNetz = page.waitForSelector('main div div div:contains("Ihre letzten Noten") + table tbody');
+
+        try {
+            await Promise.race([waitForSchulNetz, cReject(1000)])
+                .catch(() => {
+                    try {
+                        interaction.editReply({
+                            content: "Your OTP Key seems to be wrong!",
+                            ephemeral: true
+                        });
+                    } catch (err) {}
+                    throw new Error("OTP Key is wrong");
+                });
+        } catch (err) { return 1 }
+
+        await browser.close();
+
+    } catch (err) {
+        try {
+            interaction.editReply({
+                content: "Your login credentials seem to be wrong!",
+                ephemeral: true
+            });
+        } catch (err) {}
+        return 1;
+    }
+
+    return 0;
+
+
+}
+
+module.exports = { checkCredentialsUrlPin, checkCredentials }

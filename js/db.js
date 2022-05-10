@@ -14,26 +14,21 @@ async function createUser(json) {
 
 
 async function findAndUpdate(userID, newKeyValue, key) {
-
-    user.findOneAndUpdate({ 'userID': userID }, {
-        $set: {
-            [key]: newKeyValue
-        }
-    }, function(err, result) {
-        if (err) {
-            console.error(err);
-        } else {
-            return result
-        }
-    });
-
+    let userEntry = (await user.find({ 'userID': userID }))[0];
+    userEntry[key] = newKeyValue;
+    try {
+        await userEntry.save()
+    } catch (err) {
+        throw err;
+    }
+    return
 }
 
 
 async function loadUserNoGrades(userID) {
     let userEntry
     try {
-        userEntry = await user.find({ 'userID': userID }, { _id: 0, __v: 0, grades: 0 });
+        userEntry = await user.find({ 'userID': userID }, { grades: 0 });
         return userEntry[0]
     } catch (err) {
         console.error(err);
