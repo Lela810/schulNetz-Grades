@@ -17,11 +17,23 @@ const userSchema = new mongoose.Schema({
     },
     url: {
         type: String,
-        required: true
+        required: false
     },
     pin: {
         type: Number,
-        required: true
+        required: false
+    },
+    username: {
+        type: String,
+        required: false
+    },
+    password: {
+        type: String,
+        required: false
+    },
+    otp: {
+        type: String,
+        required: false
     },
     mail: {
         type: String,

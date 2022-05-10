@@ -2,7 +2,7 @@ const cheerio = require('cheerio');
 const axios = require('axios');
 const { loadUserNoGrades } = require('./db.js');
 
-async function checkCredentials(urlOrPin, key, userID, urlOrPinReverse, interaction) {
+async function checkCredentialsUrlPin(urlOrPin, key, userID, urlOrPinReverse, interaction) {
 
     let pin
     let url
@@ -55,4 +55,4 @@ async function checkCredentials(urlOrPin, key, userID, urlOrPinReverse, interact
     return 0
 }
 
-module.exports = { checkCredentials }
+module.exports = { checkCredentialsUrlPin }

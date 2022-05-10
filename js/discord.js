@@ -21,9 +21,11 @@ for (const file of commandFiles) {
 
 client.once('ready', () => {
 
-    console.log('Ready!');
+    console.log('Discord is ready!');
 
-    const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN);
+    let rest
+    if (process.env.PROD == 'true') { rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN); } else { rest = new REST({ version: '9' }).setToken(process.env.DEV_TOKEN); }
+
     const clientId = client.user.id;
     const guildId = '818249756043509771';
 
@@ -76,12 +78,12 @@ async function sendUserDM(userID, message) {
 }
 
 
-async function sendUserEmbedNotification(userID, url, messageObject) {
+async function sendUserEmbedNotification(userID, messageObject) {
 
     const embed = new Discord.MessageEmbed()
         .setColor('#0099ff')
         .setTitle(messageObject.name)
-        .setURL(url)
+        .setURL('https://gibz.zg.ch/login/sls/auth?cmd=auth-t')
         .setAuthor({ name: 'schulNetz Grades', iconURL: client.user.avatarURL() })
         .setThumbnail(client.user.avatarURL())
         .addFields({ name: 'Subject', value: messageObject.subject, inline: true }, { name: 'Grade', value: messageObject.grades + "\u200b", inline: true }, { name: 'Date', value: messageObject.date })

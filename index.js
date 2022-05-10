@@ -4,6 +4,7 @@
     const { client } = require('./js/discord.js');
     const { notify } = require('./js/notification.js');
     const { sendMail } = require('./js/mail.js');
+    const { scrapeSchulNetz } = require('./js/schulNetzScrape.js');
 
     const mongoose = require('mongoose');
 
@@ -14,8 +15,7 @@
     db.once('open', () => console.log('Connected to Database'))
 
 
-
-    client.login(process.env.BOT_TOKEN);
+    if (process.env.PROD == 'true') { client.login(process.env.BOT_TOKEN); } else { client.login(process.env.DEV_TOKEN); }
 
 
     async function runNotification() {
@@ -23,14 +23,13 @@
         try { await notify() } catch (error) { console.error(error) }
         const endTime = performance.now();
         const runtime = endTime - startTime
+        console.log(`Notification finished in ${(runtime / 1000).toFixed(2)}s`)
         const nextRun = runtime + 1000 * 10;
         setTimeout(runNotification, nextRun)
         return
     }
 
     setTimeout(async() => { await runNotification() }, 1000)
-
-
 
 
 

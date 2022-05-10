@@ -1,5 +1,5 @@
 const { loadAllUsers, findAndUpdate } = require('./db.js');
-const { scrape } = require('./schulNetzScrape.js');
+const { scrapeSchulNetz, scrapeSchulNetzMobile } = require('./schulNetzScrape.js');
 const { sendUserEmbedNotification } = require('./discord.js');
 const { sendNotificationMail } = require('./mail.js');
 
@@ -12,8 +12,14 @@ async function notify() {
     for (userID in users) {
 
         let currentUser = users[userID]
+        let newGrades
 
-        const newGrades = await scrape(currentUser.url, currentUser.pin)
+
+        if (currentUser.username && currentUser.password && currentUser.otp) {
+            newGrades = await scrapeSchulNetz(currentUser.username, currentUser.password, currentUser.otp)
+        } else if (currentUser.url && currentUser.pin) {
+            newGrades = await scrapeSchulNetzMobile(currentUser.url, currentUser.pin)
+        }
 
         if (newGrades == null) {
             continue
@@ -25,9 +31,9 @@ async function notify() {
             await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
         }
 
-        if (!currentUser.url || !currentUser.pin) {
+        /* if (!currentUser.url || !currentUser.pin) {
             return
-        }
+        } */
 
 
         const isSameGrade = (a, b) => a.subject === b.subject && a.name === b.name;
@@ -45,16 +51,21 @@ async function notify() {
 
         if (difference.length > 0) {
             await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
-            if (currentUser.subscribeDiscord) {
-                await sendUserEmbedNotification(currentUser.userID, currentUser.url, difference[0])
+            for (i in difference) {
+                console.log()
+                if (currentUser.subscribeDiscord) {
+                    await sendUserEmbedNotification(currentUser.userID, difference[i])
+                }
+                if (currentUser.subscribeMail && currentUser.mail) {
+                    sendNotificationMail(currentUser.mail, "A New Grade has been uploaded!", difference[i])
+                }
             }
-            if (currentUser.subscribeMail && currentUser.mail) {
-                sendNotificationMail(currentUser.mail, "A New Grade has been uploaded!", difference[0])
-            }
-
         }
 
+
     }
+
 }
+
 
 module.exports = { notify }

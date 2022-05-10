@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { findAndUpdate, loadUserNoGrades } = require('../db.js');
-const { checkCredentials } = require('../check-credentials.js');
+const { checkCredentialsUrlPin } = require('../check-credentials.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -68,7 +68,7 @@ module.exports = {
                 case (interaction.options._hoistedOptions.find(element => element.name == 'url') != undefined):
                     {
                         url = interaction.options._hoistedOptions.find(element => element.name === 'url').value;
-                        if (await checkCredentials(url, 'url', userID, interaction)) { throw new Error("Invalid URL") }
+                        if (await checkCredentialsUrlPin(url, 'url', userID, interaction)) { throw new Error("Invalid URL") }
                         await findAndUpdate(userID, url, 'url')
                         await sendAnswer(interaction)
                         return
@@ -76,7 +76,7 @@ module.exports = {
                 case (interaction.options._hoistedOptions.find(element => element.name == 'pin') != undefined):
                     {
                         pin = interaction.options._hoistedOptions.find(element => element.name === 'pin').value;
-                        if (await checkCredentials(pin, 'pin', userID, interaction)) { throw new Error("Invalid PIN") }
+                        if (await checkCredentialsUrlPin(pin, 'pin', userID, interaction)) { throw new Error("Invalid PIN") }
                         await findAndUpdate(userID, pin, 'pin')
                         sendAnswer(interaction)
                         return
