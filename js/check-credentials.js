@@ -154,6 +154,7 @@ async function checkCredentials(userID, interaction, username = false, password 
         try {
             await page.waitForSelector('table tbody', { timeout: 1000 });
         } catch (err) {
+            console.log(err);
             try {
                 interaction.editReply({
                     content: "Your OTP Key seems to be wrong!",

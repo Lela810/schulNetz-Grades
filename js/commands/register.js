@@ -103,6 +103,9 @@ module.exports = {
                     userEntry = await registerSchulNetz(interaction, userID)
                     break;
             }
+            if (userEntry == 1) {
+                return
+            }
 
 
 

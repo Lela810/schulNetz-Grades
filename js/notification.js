@@ -13,17 +13,17 @@ async function notify() {
     for (userID in users) {
 
         let currentUser = users[userID]
-        let newGrades = 0
+        let newGrades = 1
 
 
         try {
             if (currentUser.url && currentUser.pin) {
                 newGrades = await scrapeSchulNetzMobile(currentUser.userID, currentUser.url, currentUser.pin)
             }
-            if (currentUser.username && currentUser.password && currentUser.otp && newGrades == (0 || 1)) {
+            if (currentUser.username && currentUser.password && currentUser.otp && newGrades == 0 | 1) {
                 newGrades = await scrapeSchulNetz(currentUser.userID, currentUser.username, currentUser.password, currentUser.otp)
             }
-            if (newGrades == (1 || null)) { throw new Error("Could not scrape new grades") }
+            if (newGrades == 1 | null) { throw new Error("Could not scrape new grades") }
         } catch (err) {
             continue
         }

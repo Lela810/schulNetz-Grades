@@ -19,7 +19,7 @@ async function registerSchulNetz(interaction, userID) {
             content: 'Please enter a **valid and working** schulNetz username, password and OTP!',
             ephemeral: true
         });
-        return;
+        return 1;
     }
 
     userEntry = {

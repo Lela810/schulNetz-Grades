@@ -26,7 +26,7 @@ async function registerSchulNetzMobile(interaction, userID) {
             content: 'Please enter a **valid and working** schulNetz.mobile Link and Pin!',
             ephemeral: true
         });
-        return;
+        return 1;
     }
 
 
@@ -37,7 +37,7 @@ async function registerSchulNetzMobile(interaction, userID) {
                 content: 'Please enter a **valid** Email-Address!',
                 ephemeral: true
             });
-            return
+            return 1
         }
         userEntry = {
             ['userID']: userID,
