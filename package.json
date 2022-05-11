@@ -22,6 +22,7 @@
         "@discordjs/rest": "^0.4.1",
         "axios": "^0.27.2",
         "cheerio": "^1.0.0-rc.10",
+        "clui": "^0.3.6",
         "discord-api-types": "^0.32.1",
         "discord.js": "^13.6.0",
         "dotenv": "^16.0.0",

@@ -136,37 +136,32 @@ async function checkCredentials(userID, interaction, username = false, password 
 
         const token = authenticator.generate(otp);
 
-        const waitForChallenge = page.waitForSelector('input[name="challenge"]');
         try {
-            await Promise.race([waitForChallenge, cReject(1000)])
-                .catch(err => {
-                    try {
-                        interaction.editReply({
-                            content: "Your Username/Password seem to be wrong!",
-                            ephemeral: true
-                        });
-                    } catch (err) {}
-                    throw new Error("Username/Password wrong");
+            await page.waitForSelector('input[name="challenge"]', { timeout: 1000 });
+        } catch (err) {
+            try {
+                interaction.editReply({
+                    content: "Your Username/Password seem to be wrong!",
+                    ephemeral: true
                 });
-        } catch (err) { return 1 }
+            } catch (err) {}
+            return 1;
+        }
 
         await page.type('input[name="challenge"]', token);
         await page.click('button[type="submit"]');
 
-        const waitForSchulNetz = page.waitForSelector('main div div div:contains("Ihre letzten Noten") + table tbody');
-
         try {
-            await Promise.race([waitForSchulNetz, cReject(1000)])
-                .catch(() => {
-                    try {
-                        interaction.editReply({
-                            content: "Your OTP Key seems to be wrong!",
-                            ephemeral: true
-                        });
-                    } catch (err) {}
-                    throw new Error("OTP Key is wrong");
+            await page.waitForSelector('table tbody', { timeout: 1000 });
+        } catch (err) {
+            try {
+                interaction.editReply({
+                    content: "Your OTP Key seems to be wrong!",
+                    ephemeral: true
                 });
-        } catch (err) { return 1 }
+            } catch (err) {}
+            return 1;
+        }
 
         await browser.close();
 
