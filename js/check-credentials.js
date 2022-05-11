@@ -14,13 +14,17 @@ async function checkCredentialsUrlPin(urlOrPin, key, userID, urlOrPinReverse, in
 
     if (key == 'url') {
         url = urlOrPin
-        pin = user.pin
+        try {
+            pin = user.pin
+        } catch (e) {}
         if (pin == undefined) {
             pin = urlOrPinReverse
         }
     } else if (key == 'pin') {
         pin = urlOrPin
-        url = user.url
+        try {
+            url = user.url
+        } catch (err) {}
         if (url == undefined) {
             url = urlOrPinReverse
         }
@@ -154,7 +158,6 @@ async function checkCredentials(userID, interaction, username = false, password 
         try {
             await page.waitForSelector('table tbody', { timeout: 2000 });
         } catch (err) {
-            console.log(err);
             try {
                 interaction.editReply({
                     content: "Your OTP Key seems to be wrong!",
