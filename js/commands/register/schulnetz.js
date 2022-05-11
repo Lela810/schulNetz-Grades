@@ -12,7 +12,7 @@ async function registerSchulNetz(interaction, userID) {
         username = interaction.options._hoistedOptions.find(element => element.name === 'username').value;
         password = interaction.options._hoistedOptions.find(element => element.name === 'password').value;
         otp = interaction.options._hoistedOptions.find(element => element.name === 'otp').value;
-        if (await checkCredentials(userID, interaction, username, password, otp)) { throw new Error("Incorrect Credentials!") }
+        if (await checkCredentials(userID, false, username, password, otp)) { throw new Error("Incorrect Credentials!") }
     } catch (err) {
         console.log(err);
         interaction.editReply({

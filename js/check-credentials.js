@@ -137,7 +137,7 @@ async function checkCredentials(userID, interaction, username = false, password 
         const token = authenticator.generate(otp);
 
         try {
-            await page.waitForSelector('input[name="challenge"]', { timeout: 1000 });
+            await page.waitForSelector('input[name="challenge"]', { timeout: 2000 });
         } catch (err) {
             try {
                 interaction.editReply({
@@ -152,7 +152,7 @@ async function checkCredentials(userID, interaction, username = false, password 
         await page.click('button[type="submit"]');
 
         try {
-            await page.waitForSelector('table tbody', { timeout: 1000 });
+            await page.waitForSelector('table tbody', { timeout: 2000 });
         } catch (err) {
             console.log(err);
             try {
