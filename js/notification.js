@@ -50,12 +50,14 @@ async function notify() {
 
         //console.log(currentUser.mail);
 
+        if ((difference.find(element => element.grades == NaN) === 'Sie haben alle Noten bestätigt.') != undefined) { continue }
+
         currentUser.grades.push(...difference)
 
         if (difference.length > 0) {
             await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
             for (i in difference) {
-                console.log()
+
                 if (currentUser.subscribeDiscord) {
                     await sendUserEmbedGradeNotification(currentUser.userID, difference[i])
                 }
