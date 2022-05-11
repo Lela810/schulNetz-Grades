@@ -53,6 +53,7 @@ module.exports = {
         }
 
 
+
         const validateEmail = (email) => {
             return String(email)
                 .toLowerCase()
@@ -65,23 +66,33 @@ module.exports = {
 
         try {
 
+            let url
+            let pin
+
             if (interaction.options._hoistedOptions.find(element => element.name == 'url') != undefined) {
                 changeCounter++
-                const url = interaction.options._hoistedOptions.find(element => element.name === 'url').value;
-                if (await checkCredentialsUrlPin(url, 'url', userID, interaction)) { throw new Error("Invalid URL") }
-                await findAndUpdate(userID, url, 'url')
+                url = interaction.options._hoistedOptions.find(element => element.name === 'url').value;
             }
             if (interaction.options._hoistedOptions.find(element => element.name == 'pin') != undefined) {
                 changeCounter++
-                const pin = interaction.options._hoistedOptions.find(element => element.name === 'pin').value;
-                if (await checkCredentialsUrlPin(pin, 'pin', userID, interaction)) { throw new Error("Invalid PIN") }
-                await findAndUpdate(userID, pin, 'pin')
+                pin = interaction.options._hoistedOptions.find(element => element.name === 'pin').value;
             }
             if (interaction.options._hoistedOptions.find(element => element.name == 'mail') != undefined) {
                 changeCounter++
                 const mail = interaction.options._hoistedOptions.find(element => element.name == 'mail').value;
                 if (validateEmail(mail) == null) { throw new Error("Invalid Mail") }
                 await findAndUpdate(userID, mail, 'mail')
+            }
+            if (pin && url) {
+                if (await checkCredentialsUrlPin(pin, 'pin', userID, url, interaction)) { return }
+                await findAndUpdate(userID, pin, 'pin')
+                await findAndUpdate(userID, url, 'url')
+            } else if (pin) {
+                if (await checkCredentialsUrlPin(pin, 'pin', userID, false, interaction)) { return }
+                await findAndUpdate(userID, pin, 'pin')
+            } else if (url) {
+                if (await checkCredentialsUrlPin(url, 'url', userID, false, interaction)) { return }
+                await findAndUpdate(userID, url, 'url')
             }
 
 
@@ -103,7 +114,6 @@ module.exports = {
 
 
             if (username && password && otp) {
-                console.log(await checkCredentials(userID, interaction, username, password, otp))
                 if (await checkCredentials(userID, interaction, username, password, otp)) { return }
                 await findAndUpdate(userID, username, 'username')
                 await findAndUpdate(userID, password, 'password')
@@ -146,7 +156,6 @@ module.exports = {
                 return
             }
         } catch (err) {
-            console.log(err);
             interaction.editReply({
                 content: 'Please be sure that you have entered a **valid** option!',
                 ephemeral: true

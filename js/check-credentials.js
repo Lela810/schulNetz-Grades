@@ -14,10 +14,27 @@ async function checkCredentialsUrlPin(urlOrPin, key, userID, urlOrPinReverse, in
 
     if (key == 'url') {
         url = urlOrPin
-        try { pin = user.pin } catch (err) { pin = urlOrPinReverse }
+        pin = user.pin
+        if (pin == undefined) {
+            pin = urlOrPinReverse
+        }
     } else if (key == 'pin') {
         pin = urlOrPin
-        try { url = user.url } catch (err) { url = urlOrPinReverse }
+        url = user.url
+        if (url == undefined) {
+            url = urlOrPinReverse
+        }
+    }
+
+
+    if (url == false || pin == false) {
+        try {
+            interaction.editReply({
+                content: "Some login credentials are missing!",
+                ephemeral: true
+            });
+        } catch (err) {}
+        return 1;
     }
 
 

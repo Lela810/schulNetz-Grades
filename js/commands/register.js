@@ -57,51 +57,77 @@ module.exports = {
         }
 
 
-        try {
-            const existingUser = await loadUserNoGrades(userID)
-            if (!existingUser.subscribeDiscord) {
-                await findAndUpdate(userID, true, 'subscribeDiscord')
-            }
-            interaction.editReply({
+
+        const existingUser = await loadUserNoGrades(userID)
+
+        if (existingUser != undefined) {
+
+            await interaction.editReply({
                 content: 'You are already registered!',
                 ephemeral: true
             });
-            return
-        } catch (err) {}
 
 
-        switch (interaction.options._subcommand) {
-            case 'schulnetzmobile':
-                userEntry = await registerSchulNetzMobile(interaction, userID)
-                break;
-            case 'schulnetz':
-                userEntry = await registerSchulNetz(interaction, userID)
-                break;
-        }
-
-
-
-        try {
-
-            await createUser(userEntry)
-            interaction.editReply({
-                content: 'Your are now registered for schulNetz Grade Notifications!',
-                ephemeral: true
-            });
-
-        } catch (err) {
-
-            if (err.code == 11000) {
-                interaction.editReply({
-                    content: 'Your are already registered for schulNetz Grade Notifications!',
+            if (!existingUser.subscribeDiscord && !existingUser.subscribeMail) {
+                interaction.followUp({
+                    content: 'You can subscribe to Notifications using ``/subscribe``!',
                     ephemeral: true
-                });
-                return
-            } else {
-                console.log(err);
-                throw new Error("Could not create user!");
+                })
+            };
+
+            if (existingUser.username && existingUser.password && existingUser.otp) {
+                if (interaction.options._subcommand == 'schulnetz') {
+                    interaction.followUp({
+                        content: 'You are already registered using schulNetz Credentials! \nTry using ``/register schulnetzmobile`` instead!',
+                        ephemeral: true
+                    })
+                    return
+                }
+            }
+            if (existingUser.url && existingUser.pin) {
+                if (interaction.options._subcommand == 'schulnetzmobile') {
+                    interaction.followUp({
+                        content: 'You are already registered using schulNetz.Mobile Credentials! \nTry using ``/register schulnetz`` instead!',
+                        ephemeral: true
+                    })
+                    return
+                }
+            }
+        } else {
+
+            switch (interaction.options._subcommand) {
+                case 'schulnetzmobile':
+                    userEntry = await registerSchulNetzMobile(interaction, userID)
+                    break;
+                case 'schulnetz':
+                    userEntry = await registerSchulNetz(interaction, userID)
+                    break;
             }
 
+
+
+            try {
+
+                await createUser(userEntry)
+                interaction.editReply({
+                    content: 'Your are now registered for schulNetz Grade Notifications!',
+                    ephemeral: true
+                });
+
+            } catch (err) {
+
+                if (err.code == 11000) {
+                    interaction.editReply({
+                        content: 'Your are already registered for schulNetz Grade Notifications!',
+                        ephemeral: true
+                    });
+                    return
+                } else {
+                    console.log(err);
+                    throw new Error("Could not create user!");
+                }
+
+            }
         }
 
     }

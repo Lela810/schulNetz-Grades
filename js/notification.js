@@ -1,7 +1,7 @@
 const { loadAllUsers, findAndUpdate } = require('./db.js');
 const { scrapeSchulNetz } = require('./scrape/schulNetzScrape.js');
 const { scrapeSchulNetzMobile } = require('./scrape/schulNetzMobileScrape.js');
-const { sendUserEmbedNotification } = require('./discord.js');
+const { sendUserEmbedGradeNotification } = require('./discord.js');
 const { sendNotificationMail } = require('./mail.js');
 
 
@@ -15,13 +15,16 @@ async function notify() {
         let currentUser = users[userID]
         let newGrades
 
-        if (currentUser.url && currentUser.pin) {
-            newGrades = await scrapeSchulNetzMobile(currentUser.url, currentUser.pin)
-        } else if (currentUser.username && currentUser.password && currentUser.otp) {
-            newGrades = await scrapeSchulNetz(currentUser.username, currentUser.password, currentUser.otp)
-        }
 
-        if (newGrades == null) {
+        try {
+            if (currentUser.url && currentUser.pin) {
+                newGrades = await scrapeSchulNetzMobile(currentUser.userID, currentUser.url, currentUser.pin)
+                if (newGrades == 1 || newGrades == null) { throw new Error("scrapeSchulNetzMobile Error") }
+            } else if (currentUser.username && currentUser.password && currentUser.otp) {
+                newGrades = await scrapeSchulNetz(currentUser.userID, currentUser.username, currentUser.password, currentUser.otp)
+                if (newGrades == 1 || newGrades == null) { throw new Error("scrapeSchulNetz Error") }
+            }
+        } catch (err) {
             continue
         }
 
@@ -54,7 +57,7 @@ async function notify() {
             for (i in difference) {
                 console.log()
                 if (currentUser.subscribeDiscord) {
-                    await sendUserEmbedNotification(currentUser.userID, difference[i])
+                    await sendUserEmbedGradeNotification(currentUser.userID, difference[i])
                 }
                 if (currentUser.subscribeMail && currentUser.mail) {
                     sendNotificationMail(currentUser.mail, "A New Grade has been uploaded!", difference[i])

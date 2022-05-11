@@ -1,13 +1,18 @@
 const cheerio = require('cheerio');
 const puppeteer = require('puppeteer');
 const { authenticator } = require('otplib');
+const { checkCredentials } = require('../check-credentials.js');
+const { sendUserEmbedCredentialsNotification } = require('../discord.js');
 
 
 
 
-async function scrapeSchulNetz(username, password, otp) {
+async function scrapeSchulNetz(userID, username, password, otp) {
 
-
+    if (await checkCredentials(userID, false, username, password, otp)) {
+        await sendUserEmbedCredentialsNotification(userID)
+        return 1
+    }
 
     const url = "https://gibz.zg.ch/login/sls/auth?cmd=auth-t"
     const browser = await puppeteer.launch({

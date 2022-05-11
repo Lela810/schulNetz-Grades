@@ -1,8 +1,16 @@
 const cheerio = require('cheerio');
 const axios = require('axios');
+const { checkCredentialsUrlPin } = require('../check-credentials.js');
+const { sendUserEmbedCredentialsNotification } = require('../discord.js');
 
 
-async function scrapeSchulNetzMobile(url, pin) {
+async function scrapeSchulNetzMobile(userID, url, pin) {
+
+
+    if (await checkCredentialsUrlPin(pin, 'pin', userID, url)) {
+        await sendUserEmbedCredentialsNotification(userID)
+        return 1
+    }
 
     let $
     try {

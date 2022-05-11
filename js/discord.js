@@ -78,7 +78,7 @@ async function sendUserDM(userID, message) {
 }
 
 
-async function sendUserEmbedNotification(userID, messageObject) {
+async function sendUserEmbedGradeNotification(userID, messageObject) {
 
     const embed = new Discord.MessageEmbed()
         .setColor('#0099ff')
@@ -95,9 +95,39 @@ async function sendUserEmbedNotification(userID, messageObject) {
 }
 
 
+async function sendUserEmbedCredentialsNotification(userID) {
+
+
+
+    const embed = new Discord.MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Your Credentials seem to wrong!')
+        .setURL('https://gibz.zg.ch/login/sls/auth?cmd=auth-t')
+        .setAuthor({ name: 'schulNetz Grades', iconURL: client.user.avatarURL() })
+        .setThumbnail(client.user.avatarURL())
+        .setDescription('Please check your Credentials!')
+        .addFields({ name: 'Command', value: '``/edit``', inline: true })
+        .setTimestamp()
+        .setFooter({ text: 'subject to change', iconURL: client.user.avatarURL() });
+
+    const user = await client.users.fetch(userID);
+
+    let lastMessage
+    await (await user.createDM() || await user.dmChannel).messages.fetch({ limit: 1 }).then(messages => {
+        lastMessage = messages.first();
+    })
+
+    if (lastMessage.embeds[0].title == 'Your Credentials seem to wrong!' && lastMessage.embeds[0].timestamp >= Date.now() - 86400000) {
+        return 0
+    } else {
+        user.send({ embeds: [embed] });
+    }
+}
+
+
 //client.login(process.env.BOT_TOKEN);
 
 
 
 
-module.exports = { client, sendUserDM, sendUserEmbedNotification };
+module.exports = { client, sendUserDM, sendUserEmbedGradeNotification, sendUserEmbedCredentialsNotification };

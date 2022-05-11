@@ -20,7 +20,6 @@ async function registerSchulNetzMobile(interaction, userID) {
         url = interaction.options._hoistedOptions.find(element => element.name === 'url').value;
         pin = interaction.options._hoistedOptions.find(element => element.name === 'pin').value;
         if (await checkCredentialsUrlPin(url, 'url', userID, pin)) { throw new Error("Incorrect URL!") }
-        if (await checkCredentialsUrlPin(pin, 'pin', userID, url)) { throw new Error("Incorrect Pin!") }
     } catch (err) {
         console.log(err);
         interaction.editReply({
