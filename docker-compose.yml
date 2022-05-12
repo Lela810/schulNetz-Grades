@@ -4,6 +4,8 @@ services:
     container_name: schulNetz-Grades
     build: .
     restart: unless-stopped
+    networks:
+      - schulnetz
     env_file:
       - stack.env
     depends_on:
@@ -11,6 +13,8 @@ services:
   mongodb:
     image: mongo:4.4.10
     container_name: mongodb
+    networks:
+      - schulnetz
     environment:
       - MONGO_INITDB_DATABASE=schulNetz-grades
     volumes:
@@ -20,3 +24,5 @@ services:
     restart: unless-stopped
 volumes:
   db:
+networks:
+  schulnetz:
