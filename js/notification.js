@@ -33,10 +33,6 @@ async function notify() {
             currentUser.grades = newGrades
         }
 
-        /* if (!currentUser.url || !currentUser.pin) {
-            return
-        } */
-
 
         const isSameGrade = (a, b) => a.subject === b.subject && a.name === b.name;
 
@@ -46,8 +42,6 @@ async function notify() {
                     compareFunction(leftValue, rightValue)));
 
         const difference = onlyInLeft(newGrades, currentUser.grades, isSameGrade);
-
-
 
 
         let failedCheck
