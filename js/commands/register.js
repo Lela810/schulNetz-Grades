@@ -62,10 +62,6 @@ module.exports = {
 
         if (existingUser != undefined) {
 
-            await interaction.editReply({
-                content: 'You are already registered!',
-                ephemeral: true
-            });
 
 
             if (!existingUser.subscribeDiscord && !existingUser.subscribeMail) {
@@ -82,6 +78,15 @@ module.exports = {
                         ephemeral: true
                     })
                     return
+                } else {
+                    userEntry = await registerSchulNetzMobile(interaction, userID)
+                    await findAndUpdate(existingUser.userID, userEntry.url, 'url')
+                    await findAndUpdate(existingUser.userID, userEntry.pin, 'pin')
+                    interaction.followUp({
+                        content: 'Your are now registered using schulNetz.mobile!',
+                        ephemeral: true
+                    })
+                    return
                 }
             }
             if (existingUser.url && existingUser.pin) {
@@ -91,8 +96,24 @@ module.exports = {
                         ephemeral: true
                     })
                     return
+                } else {
+                    userEntry = await registerSchulNetz(interaction, userID)
+                    await findAndUpdate(existingUser.userID, userEntry.username, 'username')
+                    await findAndUpdate(existingUser.userID, userEntry.password, 'password')
+                    await findAndUpdate(existingUser.userID, userEntry.otp, 'otp')
+                    interaction.followUp({
+                        content: 'Your are now registered using schulNetz Credentials!',
+                        ephemeral: true
+                    })
+                    return
                 }
             }
+
+            await interaction.editReply({
+                content: 'You are already registered!',
+                ephemeral: true
+            });
+
         } else {
 
             switch (interaction.options._subcommand) {

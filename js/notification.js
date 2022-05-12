@@ -29,43 +29,44 @@ async function notify() {
         }
 
 
+
+        if (await newGrades.forEach(element => {
+                if (Object.values(element).includes(NaN)) { return true }
+            })) { continue }
+
+
         if (!currentUser.grades) {
+
             currentUser.grades = newGrades
-        }
-
-
-        const isSameGrade = (a, b) => a.subject === b.subject && a.name === b.name;
-
-        const onlyInLeft = (left, right, compareFunction) =>
-            left.filter(leftValue =>
-                !right.some(rightValue =>
-                    compareFunction(leftValue, rightValue)));
-
-        const difference = onlyInLeft(newGrades, currentUser.grades, isSameGrade);
-
-
-        let failedCheck
-        await difference.forEach(element => {
-            if (Object.values(element).includes(NaN)) { failedCheck = true }
-        })
-        if (failedCheck) { continue }
-
-
-        currentUser.grades.push(...difference)
-
-        if (difference.length > 0) {
             await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
-            for (i in difference) {
 
-                if (currentUser.subscribeDiscord) {
-                    await sendUserEmbedGradeNotification(currentUser.userID, difference[i])
-                }
-                if (currentUser.subscribeMail && currentUser.mail) {
-                    sendNotificationMail(currentUser.mail, "A New Grade has been uploaded!", difference[i])
+        } else {
+
+            const isSameGrade = (a, b) => a.subject === b.subject && a.name === b.name;
+
+            const onlyInLeft = (left, right, compareFunction) =>
+                left.filter(leftValue =>
+                    !right.some(rightValue =>
+                        compareFunction(leftValue, rightValue)));
+
+            const difference = onlyInLeft(newGrades, currentUser.grades, isSameGrade);
+
+
+            currentUser.grades.push(...difference)
+
+            if (difference.length > 0) {
+                await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
+                for (i in difference) {
+
+                    if (currentUser.subscribeDiscord) {
+                        await sendUserEmbedGradeNotification(currentUser.userID, difference[i])
+                    }
+                    if (currentUser.subscribeMail && currentUser.mail) {
+                        sendNotificationMail(currentUser.mail, "A New Grade has been uploaded!", difference[i])
+                    }
                 }
             }
         }
-
 
     }
 

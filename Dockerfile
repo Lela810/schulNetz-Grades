@@ -5,9 +5,9 @@ ENV NODE_ENV=production \
 
 WORKDIR /app
 
-RUN mkdir db
-
 COPY ["package.json", "package-lock.json*", "./"]
+
+RUN npm install --production
 
 RUN apt-get update && apt-get install -y \
     ca-certificates \
@@ -47,8 +47,6 @@ RUN apt-get update && apt-get install -y \
     lsb-release \
     wget \
     xdg-utils
-
-RUN npm install --production
 
 COPY . .
 
