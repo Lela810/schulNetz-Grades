@@ -1,7 +1,6 @@
 version: '3.3'
 services:
-  web:
-    container_name: schulNetz-Grades
+  schulNetz-Grades:
     build: .
     restart: unless-stopped
     depends_on:
@@ -9,7 +8,6 @@ services:
     network_mode: host
   mongodb:
     image: mongo:4.4.10
-    container_name: mongodb
     environment:
       - MONGO_INITDB_DATABASE=schulNetz-grades
     volumes:
