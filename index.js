@@ -1,6 +1,7 @@
 (async() => {
 
-    await require('dotenv').config()
+
+
     const { client } = require('./js/discord.js');
     const { notify } = require('./js/notification.js');
     const { connect, connection } = require('mongoose');
@@ -13,7 +14,12 @@
     db.once('open', () => console.log('Connected to Database'))
 
 
-    if (process.env.PROD == 'true') { client.login(process.env.BOT_TOKEN); } else { client.login(process.env.DEV_TOKEN); }
+    if (process.env.PROD == 'true') {
+        client.login(process.env.BOT_TOKEN);
+    } else {
+        client.login(process.env.DEV_TOKEN);
+        await require('dotenv').config()
+    }
 
 
     async function runNotification() {
