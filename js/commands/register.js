@@ -63,6 +63,14 @@ module.exports = {
         if (existingUser != undefined) {
 
 
+            if (existingUser.username && existingUser.password && existingUser.otp && existingUser.url && existingUser.pin) {
+                await interaction.editReply({
+                    content: 'You are already registered!',
+                    ephemeral: true
+                });
+                return
+            };
+
 
             if (!existingUser.subscribeDiscord && !existingUser.subscribeMail) {
                 interaction.followUp({
