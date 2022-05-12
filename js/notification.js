@@ -31,7 +31,6 @@ async function notify() {
 
         if (!currentUser.grades) {
             currentUser.grades = newGrades
-            await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
         }
 
         /* if (!currentUser.url || !currentUser.pin) {
@@ -48,9 +47,15 @@ async function notify() {
 
         const difference = onlyInLeft(newGrades, currentUser.grades, isSameGrade);
 
-        //console.log(currentUser.mail);
 
-        if ((difference.find(element => element.grades == NaN) === 'Sie haben alle Noten bestätigt.') != undefined) { continue }
+
+
+        let failedCheck
+        await difference.forEach(element => {
+            if (Object.values(element).includes(NaN)) { failedCheck = true }
+        })
+        if (failedCheck) { continue }
+
 
         currentUser.grades.push(...difference)
 
