@@ -29,10 +29,11 @@ async function notify() {
         }
 
 
-
-        if (await newGrades.forEach(element => {
-                if (Object.values(element).includes(NaN)) { return true }
-            })) { continue }
+        let failedCheck
+        await newGrades.forEach(element => {
+            if (Object.values(element).includes(NaN)) { failedCheck = true }
+        })
+        if (failedCheck) { continue }
 
 
         if (!currentUser.grades) {
