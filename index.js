@@ -4,10 +4,9 @@
     const { client } = require('./js/discord.js');
     const { notify } = require('./js/notification.js');
     const { connect, connection } = require('mongoose');
-    const { LineBuffer, Line } = require('clui');
+    const { Gauge } = require('clui');
     const { LiveContainer } = require('clui-live');
     const { plot } = require('asciichart');
-    const { green } = require('cli-color');
 
 
     const container = new LiveContainer().hook();
@@ -22,28 +21,9 @@
     if (process.env.PROD == 'true') { client.login(process.env.BOT_TOKEN); } else { client.login(process.env.DEV_TOKEN); }
 
 
-
-    let outputBuffer = new LineBuffer({
-        x: 2,
-        y: 0,
-        width: 'console',
-        height: '2'
-    });
-
-    new Line(outputBuffer)
-        .column('Live Runtime', 20, [green])
-        .fill()
-        .store();
-    new Line(outputBuffer)
-        .column('------------', 20, [green])
-        .fill()
-        .store();
-
-
-
     console.clear()
 
-    container.createLiveArea().write(outputBuffer.output());
+
     const area1 = container.createLiveArea();
     const area2 = container.createLiveArea();
 
@@ -61,16 +41,16 @@
         if (total <= 1) { total = 10 }
 
 
-        area1.write(plot(runtimeHistory, { padding: '      s' }))
-        area2.write('\n  ' + green('Console Output') + '\n  ' + green('--------------') + '\n');
+        area1.write(plot(runtimeHistory, { padding: '      s', height: '10' }))
+        area2.write('\n  ' + Gauge(runtime, total, 20, total * 0.8, runtime + `s / ${total}s Total`) + '\n');
 
-        if (runtimeHistory.length >= 30) {
+        if (runtimeHistory.length >= 60) {
             runtimeHistory.shift();
             runtimeHistory[0] = 0
         }
         runtimeHistory.push(runtime)
 
-        setTimeout(runNotification, 100)
+        setTimeout(runNotification, 10000)
         return
     }
 
