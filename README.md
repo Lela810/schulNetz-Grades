@@ -1,1 +1,1 @@
-# GibzGrades
+# schulNetz Grades Notificator
