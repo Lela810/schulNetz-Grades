@@ -51,11 +51,13 @@ async function notify() {
 
             const difference = onlyInLeft(newGrades, currentUser.grades, isSameGrade);
 
-
             currentUser.grades.push(...difference)
+
+            await findAndUpdate(currentUser.userID, Date.now(), 'lastSuccessfulScrape')
 
             if (difference.length > 0) {
                 await findAndUpdate(currentUser.userID, currentUser.grades, 'grades')
+
                 for (i in difference) {
 
                     if (currentUser.subscribeDiscord) {

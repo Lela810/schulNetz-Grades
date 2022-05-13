@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    lastSuccessfulScrape: {
+        type: Date,
+        required: false
+    },
     grades: {
         type: Object,
         required: false
@@ -50,7 +54,7 @@ const userSchema = new mongoose.Schema({
 var encKey = process.env.ENCKEY;
 var sigKey = process.env.SIGKEY;
 
-userSchema.plugin(encrypt, { encryptionKey: encKey, signingKey: sigKey, decryptPostSave: false, additionalAuthenticatedFields: ['userID'], excludeFromEncryption: ['subscribeMail', 'subscribeDiscord', 'userID', 'grades'] });
+userSchema.plugin(encrypt, { encryptionKey: encKey, signingKey: sigKey, decryptPostSave: false, additionalAuthenticatedFields: ['userID'], excludeFromEncryption: ['subscribeMail', 'subscribeDiscord', 'lastSuccessfulScrape', 'userID', 'grades'] });
 
 
 module.exports = mongoose.model('user', userSchema)

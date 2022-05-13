@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
+const { loadUserNoGrades } = require('./db.js');
 const fs = require('node:fs');
 
 
@@ -98,10 +99,9 @@ async function sendUserEmbedGradeNotification(userID, messageObject) {
 async function sendUserEmbedCredentialsNotification(userID) {
 
 
-
     const embed = new Discord.MessageEmbed()
         .setColor('#0099ff')
-        .setTitle('Your Credentials seem to wrong!')
+        .setTitle('Your Credentials seem to be wrong!')
         .setURL('https://gibz.zg.ch/login/sls/auth?cmd=auth-t')
         .setAuthor({ name: 'schulNetz Grades', iconURL: client.user.avatarURL() })
         .setThumbnail(client.user.avatarURL())
@@ -110,6 +110,9 @@ async function sendUserEmbedCredentialsNotification(userID) {
         .setTimestamp()
         .setFooter({ text: 'subject to change', iconURL: client.user.avatarURL() });
 
+
+    const dbUser = loadUserNoGrades(userID)
+
     const user = await client.users.fetch(userID);
 
     let lastMessage
@@ -117,7 +120,7 @@ async function sendUserEmbedCredentialsNotification(userID) {
         lastMessage = messages.first();
     })
 
-    if (lastMessage.embeds[0].title == 'Your Credentials seem to wrong!' && lastMessage.embeds[0].timestamp >= Date.now() - 86400000) {
+    if (lastMessage.embeds[0].title == 'Your Credentials seem to be wrong!' && lastMessage.embeds[0].timestamp >= Date.now() - 86400000 && dbUser.lastSuccessfulScrape >= Date.now() - 3600000) {
         return 0
     } else {
         user.send({ embeds: [embed] });
