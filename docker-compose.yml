@@ -6,3 +6,5 @@ services:
     restart: unless-stopped
     env_file:
       - stack.env
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
