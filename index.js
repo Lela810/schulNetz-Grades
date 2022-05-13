@@ -4,7 +4,13 @@
     const { client } = require('./js/discord.js');
     const { notify } = require('./js/notification.js');
     const { connect, connection } = require('mongoose');
-    const { Gauge } = require('clui');
+    const { LineBuffer, Line } = require('clui');
+    const { LiveContainer } = require('clui-live');
+    const { plot } = require('asciichart');
+    const { green } = require('cli-color');
+
+
+    const container = new LiveContainer().hook();
 
 
     connect(`mongodb://${process.env.MONGODB}/schulNetz-grades`, { useNewUrlParser: true })
@@ -16,20 +22,55 @@
     if (process.env.PROD == 'true') { client.login(process.env.BOT_TOKEN); } else { client.login(process.env.DEV_TOKEN); }
 
 
+
+    let outputBuffer = new LineBuffer({
+        x: 2,
+        y: 0,
+        width: 'console',
+        height: '2'
+    });
+
+    new Line(outputBuffer)
+        .column('Live Runtime', 20, [green])
+        .fill()
+        .store();
+    new Line(outputBuffer)
+        .column('------------', 20, [green])
+        .fill()
+        .store();
+
+
+
+    console.clear()
+
+    container.createLiveArea().write(outputBuffer.output());
+    const area1 = container.createLiveArea();
+    const area2 = container.createLiveArea();
+
+
+    let runtimeHistory = [0]
+
     async function runNotification() {
 
         const startTime = performance.now();
         try { await notify() } catch (error) { console.error(error) }
         const endTime = performance.now();
 
-        const runtime = endTime - startTime
-        const nextRun = runtime + 1000 * 10;
-        let total = Math.ceil(runtime / 1000 / 10)
+        const runtime = ((endTime - startTime) / 1000).toFixed(2);
+        let total = Math.ceil(runtime / 10)
         if (total <= 1) { total = 10 }
 
-        console.log(Gauge((runtime / 1000).toFixed(2), total, 20, total * 0.8, (runtime / 1000).toFixed(2) + `s / ${total}s Total`));
 
-        setTimeout(runNotification, 10000)
+        area1.write(plot(runtimeHistory, { padding: '      s' }))
+        area2.write('\n  ' + green('Console Output') + '\n  ' + green('--------------') + '\n');
+
+        if (runtimeHistory.length >= 30) {
+            runtimeHistory.shift();
+            runtimeHistory[0] = 0
+        }
+        runtimeHistory.push(runtime)
+
+        setTimeout(runNotification, 100)
         return
     }
 

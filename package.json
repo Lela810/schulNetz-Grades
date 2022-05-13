@@ -19,9 +19,12 @@
     "dependencies": {
         "@discordjs/builders": "^0.13.0",
         "@discordjs/rest": "^0.4.1",
+        "asciichart": "^1.5.25",
         "axios": "^0.27.2",
         "cheerio": "^1.0.0-rc.10",
+        "cli-color": "^2.0.2",
         "clui": "^0.3.6",
+        "clui-live": "^0.3.4",
         "discord-api-types": "^0.32.1",
         "discord.js": "^13.6.0",
         "dotenv": "^16.0.0",
