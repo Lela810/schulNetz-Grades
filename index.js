@@ -15,7 +15,7 @@
     if (!process.env.MONGODB_USERNAME || !process.env.MONGODB_PASSWORD) {
         connect(`mongodb://${process.env.MONGODB}/schulNetz-grades`, { useNewUrlParser: true })
     } else {
-        connect(`mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB}/schulNetz-grades`, { useNewUrlParser: true })
+        connect(`mongodb://${process.env.MONGODB_USERNAME}:${encodeURIComponent(process.env.MONGODB_PASSWORD)}@${process.env.MONGODB}/schulNetz-grades`, { useNewUrlParser: true })
     }
 
     const db = connection
