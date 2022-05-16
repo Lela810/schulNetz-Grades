@@ -41,9 +41,9 @@
         try { await notify() } catch (error) { console.error(error) }
         const endTime = performance.now();
 
-        const runtime = ((endTime - startTime) / 1000).toFixed(2);
-        let total = Math.ceil(runtime / 10)
-        if (total <= 1) { total = 10 }
+        let runtime = ((endTime - startTime) / 1000).toFixed(2);
+        let total
+        if (runtime < 10) { total = 10 } else if (runtime < 100) { total = 100 } else { total = Math.ceil(runtime / 100) * 100 }
 
 
         area1.write(plot(runtimeHistory, { padding: '      s', height: '10' }))
