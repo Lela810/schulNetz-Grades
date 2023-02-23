@@ -3,6 +3,7 @@ services:
   web:
     container_name: schulNetz-Grades
     build: .
+    pull_policy: build
     restart: unless-stopped
     env_file:
       - stack.env
