@@ -2,8 +2,7 @@ version: '3.3'
 services:
   web:
     container_name: schulNetz-Grades
-    build: .
-    pull_policy: build
+    image: ghcr.io/lela810/schulnetz-grades:main
     restart: unless-stopped
     env_file:
       - stack.env
